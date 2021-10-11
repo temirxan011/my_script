@@ -1,17 +1,32 @@
 import json
 import requests
 import csv
+import os.path
 
-# открытие файла для чтения
-with open("f.json", "r") as read_file:
-    data = json.load(read_file)
 
-# формирование adress на основер парсинга json файла и списка files с диркториями которые нужно посетить
-files = data['files']
-adress = data['proto'] + '://' + data['host'] + ':' + data['port']
+# проверка корректности ввода данных
+file_name = input('название файла: ')
+while not os.path.isfile(file_name) and file_name[:-5] != '.json':
+    file_name = input('файл не найден или файл не является json, введите еще раз: ')
+
+
+# открытие файла для чтения и обработка в случаии ошибки
+with open(file_name, "r") as read_file:
+    try:
+        data = json.load(read_file)
+        # формирование adress на основер парсинга json файла и списка files с диркториями которые нужно поситить
+        files = data['files']
+        adress = data['proto'] + '://' + data['host'] + ':' + data['port']
+    except json.decoder.JSONDecodeError:
+        print('ОШИБКА В ФАЙЛЕ json')
+        raise SystemExit(1)
+
+
+
 
 # список с словарями, которые содержат необходимые данные  из ответов GET запросов. Заполняется в цикле for
 response_data = []
+
 
 # отправка GET запроса и формирование списка с необходимыми данными
 for i in files:
