@@ -3,14 +3,20 @@ import requests
 import csv
 import os.path
 import re
+from sys import argv
 
 
 # function to open json file and check data
 def reading_file():
     # checking the correctness of the extension and the existence of the file
-    file_name = input('file name: ')
-    while not os.path.isfile(file_name) and file_name[:-5] != '.json':
-        file_name = input('file not found or file is not json, enter again: ')
+    try:
+        file_name = argv[1]
+    except:
+        print('ERROR: missing argument <file_name>')
+        raise SystemExit(1)
+    if not os.path.isfile(file_name) and file_name[:-5] != '.json':
+       print('ERROR: file not found or file is not json')
+       raise SystemExit(1)
 
     # opening a file for reading and processing in case of an error
     with open(file_name, "r") as read_file:
@@ -36,6 +42,9 @@ def reading_file():
         raise SystemExit(1)
     if re.match(r"\d{,5}$", data['port']) is None:
         print('ERROR: not correct port format')
+        raise SystemExit(1)
+    if type(data['files']) != list:
+        print('ERROR: values by key files is not a list')
         raise SystemExit(1)
     return data
 
@@ -81,7 +90,7 @@ def sending_requests(data):
 # functions for writing data in csv format
 def file_creation_csv(response_data):
     # creating a otvet.csv file and writing data there from the response_data list
-    with open('otvet.csv', 'w') as csvfile:
+    with open('report.csv', 'w') as csvfile:
         fieldnames = ['request URL', 'response code', 'comment']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames,  delimiter =';')
 

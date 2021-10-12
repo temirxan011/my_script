@@ -2,7 +2,7 @@
   "host":"127.0.0.1",
   "port": "80",
   "proto":"http",
-  "files": 
+  "files":
     [
       "/api/createUser",
       "/tools/server_info.jsp",
