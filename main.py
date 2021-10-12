@@ -90,12 +90,17 @@ def sending_requests(data):
 # functions for writing data in csv format
 def file_creation_csv(response_data):
     # creating a otvet.csv file and writing data there from the response_data list
-    with open('report.csv', 'w') as csvfile:
-        fieldnames = ['request URL', 'response code', 'comment']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames,  delimiter =';')
+    try:
+        with open('report.csv', 'w') as csvfile:
+            fieldnames = ['request URL', 'response code', 'comment']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames,  delimiter =';')
 
-        writer.writeheader()
-        writer.writerows(response_data)
+            writer.writeheader()
+            writer.writerows(response_data)
+    except IOError:
+        print('ERROR: Permission denied')
+        raise SystemExit(1)
+
 
 
 main_data = reading_file()

@@ -1,14 +1,10 @@
 {
-  "host":"127.0.0.1",
+  "host":"195.161.114.130",
   "port": "80",
   "proto":"http",
   "files":
     [
-      "/api/createUser",
-      "/tools/server_info.jsp",
-      ".git",
-      "/console/admin.jsp",
-      "login.jsp",
-      "/index.html"
+	"/crypts",
+	"/crypts/text2hex/"
      ]
 }
