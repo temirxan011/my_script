@@ -1,10 +1,10 @@
 {
-  "host":"195.161.114.130",
+  "host": "127.0.0.1",
   "port": "80",
   "proto":"http",
   "files":
     [
-	"/crypts",
+	"/",
 	"/crypts/text2hex/"
      ]
 }

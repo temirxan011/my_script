@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import json
 import requests
 import csv
@@ -28,19 +29,23 @@ def reading_file():
 
     # checking for the necessary keys
     keys_dict = ['host', 'port', 'proto', 'files']
-    for i in keys_dict:
-        if i not in data:
-            print('ERROR: missing field ' + i)
-            raise SystemExit(1)
+    if len(data) == 4:
+        for i in keys_dict:
+            if i not in data:
+                print('ERROR: missing field ' + i)
+                raise SystemExit(1)
+    else:
+        print('ERROR: the number of fields is not correct')
+        raise SystemExit(1)
 
     # check for compliance with the format (ip, host, port) given from the json file
-    if re.match(r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', data['host']) is None:
+    if re.match(r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', str(data['host'])) is None:
         print('ERROR: not correct IP address format')
         raise SystemExit(1)
-    if re.match(r'http', data['proto']) is None:
+    if re.match(r'http', str(data['proto'])) is None:
         print('ERROR: incorrect protocol format')
         raise SystemExit(1)
-    if re.match(r"\d{,5}$", data['port']) is None:
+    if re.match(r"\d{1,5}$", str(data['port'])) is None:
         print('ERROR: not correct port format')
         raise SystemExit(1)
     if type(data['files']) != list:
@@ -53,7 +58,7 @@ def reading_file():
 def sending_requests(data):
     # formation of an adress based on parsing a json file and a list of files with directories that need to be visited
     files = data['files']
-    adress = data['proto'] + '://' + data['host'] + ':' + data['port']
+    adress = str(data['proto']) + '://' + str(data['host']) + ':' + str(data['port'])
 
     # a list with dictionaries that contain the necessary data from the responses of GET requests. Filled in for loop
     response_data = []
@@ -61,7 +66,7 @@ def sending_requests(data):
     # sending a GET request and forming a list with the necessary data
     for i in files:
         # forming url from parsed data
-        url = adress + i
+        url = adress + str(i)
         # handle exceptions associated with a get request
         try:
             response = requests.get(url = url)
