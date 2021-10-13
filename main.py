@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import json
-import requests
 import csv
 import os.path
 import re
 from sys import argv
+import requests
 
 
 # function to open json file and check data
@@ -14,18 +14,18 @@ def reading_file():
         file_name = argv[1]
     except:
         print('ERROR: missing argument <file_name>')
-        raise SystemExit(1)
+        raise SystemExit(0)
     if not os.path.isfile(file_name) and file_name[:-5] != '.json':
        print('ERROR: file not found or file is not json')
-       raise SystemExit(1)
+       raise SystemExit(0)
 
     # opening a file for reading and processing in case of an error
     with open(file_name, "r") as read_file:
         try:
             data = json.load(read_file)
-        except json.decoder.JSONDecodeError:
-            print('ERROR: json file syntax not correct')
-            raise SystemExit(1)
+        except:
+            print('ERROR: file is not json or json file syntax not correct')
+            raise SystemExit(0)
 
     # checking for the necessary keys
     keys_dict = ['host', 'port', 'proto', 'files']
@@ -33,40 +33,40 @@ def reading_file():
         for i in keys_dict:
             if i not in data:
                 print('ERROR: missing field ' + i)
-                raise SystemExit(1)
+                raise SystemExit(0)
     else:
         print('ERROR: the number of fields is not correct')
-        raise SystemExit(1)
+        raise SystemExit(0)
 
     # check for compliance with the format (ip, host, port) given from the json file
     if re.match(r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', str(data['host'])) is None:
         print('ERROR: not correct IP address format')
-        raise SystemExit(1)
+        raise SystemExit(0)
     if re.match(r'http', str(data['proto'])) is None:
         print('ERROR: incorrect protocol format')
-        raise SystemExit(1)
+        raise SystemExit(0)
     if re.match(r"\d{1,5}$", str(data['port'])) is None:
         print('ERROR: not correct port format')
         raise SystemExit(1)
     if type(data['files']) != list:
         print('ERROR: values by key files is not a list')
-        raise SystemExit(1)
+        raise SystemExit(0)
     return data
 
 
 # function for sending get requests
 def sending_requests(data):
     # formation of an adress based on parsing a json file and a list of files with directories that need to be visited
-    files = data['files']
-    adress = str(data['proto']) + '://' + str(data['host']) + ':' + str(data['port'])
+    directory_list = data['files']
+    provisional_address = str(data['proto']) + '://' + str(data['host']) + ':' + str(data['port'])
 
     # a list with dictionaries that contain the necessary data from the responses of GET requests. Filled in for loop
     response_data = []
 
     # sending a GET request and forming a list with the necessary data
-    for i in files:
+    for i in directory_list:
         # forming url from parsed data
-        url = adress + str(i)
+        url = provisional_address + str(i)
         # handle exceptions associated with a get request
         try:
             response = requests.get(url = url)
@@ -96,15 +96,15 @@ def sending_requests(data):
 def file_creation_csv(response_data):
     # creating a otvet.csv file and writing data there from the response_data list
     try:
-        with open('report.csv', 'w') as csvfile:
+        with open('report.csv', 'w') as csv_file:
             fieldnames = ['request URL', 'response code', 'comment']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames,  delimiter =';')
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames,  delimiter =';')
 
             writer.writeheader()
             writer.writerows(response_data)
     except IOError:
         print('ERROR: Permission denied')
-        raise SystemExit(1)
+        raise SystemExit(0)
 
 
 

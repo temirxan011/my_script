@@ -1,0 +1,13 @@
+{
+  "host":"10.10.10.1",
+  "port": "80",
+  "proto":"http",
+  "files": 
+    [
+      "/api/createUser",
+      "/tools/server_info.jsp"
+      ".git",
+      "/console/admin.jsp",
+      "login.jsp"
+     ]
+}
